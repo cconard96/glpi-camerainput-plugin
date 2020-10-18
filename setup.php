@@ -32,6 +32,7 @@ function plugin_init_camerainput()
 	if (Plugin::isPluginActive('camerainput')) {
       $PLUGIN_HOOKS['add_javascript']['camerainput'][] = 'lib/quagga/quagga2.min.js';
       $PLUGIN_HOOKS['add_javascript']['camerainput'][] = 'js/camerainput.js';
+      $PLUGIN_HOOKS['add_css']['camerainput'][] = 'css/camerainput.css';
    }
 }
 

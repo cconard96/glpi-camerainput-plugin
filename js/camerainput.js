@@ -47,16 +47,33 @@ $(document).on('ready', function() {
    $(`<div id="camera-input-viewport"><video autoplay muted preload="auto"></video></div>`).appendTo('main');
    $('#camera-input-viewport').dialog({
       autoOpen: false,
+      width: 640,
+      height: 400,
+      position: {
+         my: "center",
+         at: "center",
+         of: window
+      },
+      resizable: false,
       close: function() {
          Quagga.stop();
       }
+   });
+   // Dynamically resize video element and dialog
+   $("#camera-input-viewport video").on('loadedmetadata', function() {
+      const vidWidth = Math.min(window.innerWidth - 10, 640);
+      const vidHeight = vidWidth * 0.5625; // 16:9
+      this.width = vidWidth;
+      this.height = vidHeight;
+      $('#camera-input-viewport').dialog("option", "width", vidWidth);
+      $('#camera-input-viewport').dialog("option", "height", vidHeight + 60);
    });
 
    // Hook into global search box
    const global_search = $('#champRecherche');
    if (global_search.length > 0) {
       global_search.append(`
-         <button type="button" class="camera-input" style="border-radius: 3px 3px 3px 3px; padding: 3px" title="Camera search">
+         <button type="button" class="camera-input" title="Camera search">
              <i class="fas fa-camera"></i>
          </button>`);
       global_search.find('.camera-input').on('click', function() {
@@ -82,7 +99,7 @@ $(document).on('ready', function() {
       const physinv_search = $('main form').first();
       if (physinv_search) {
          physinv_search.find('input[name="searchnumber"]').after(`
-         <button type="button" class="camera-input" style="border-radius: 3px 3px 3px 3px; padding: 3px; background: white; border: none; height: 40px" title="Camera search">
+         <button type="button" class="camera-input pointer" style="border-radius: 3px 3px 3px 3px; padding: 3px; background: white; border: none; height: 40px" title="Camera search">
              <i class="fas fa-camera fa-lg"></i>
          </button>`);
          physinv_search.find('.camera-input').on('click', function() {
