@@ -120,4 +120,31 @@ $(document).on('ready', function() {
          });
       }
    }
+
+   // Hook into Asset Audit plugin search (if present)
+   if (window.location.href.indexOf('/assetaudit/front') > -1) {
+      const assetaudit_search = $('main form').first();
+      if (assetaudit_search) {
+         assetaudit_search.find('input[name="search_criteria"]').after(`
+         <button type="button" class="camera-input pointer" style="border-radius: 3px 3px 3px 3px; padding: 3px; background: white; border: none; height: 40px" title="Camera search">
+             <i class="fas fa-camera fa-lg"></i>
+         </button>`);
+         assetaudit_search.find('.camera-input').on('click', function() {
+            $('#camera-input-viewport').dialog('open');
+            Quagga.init(getQuaggaConfig(), function(err) {
+               if (err) {
+                  console.log(err);
+                  return
+               }
+               Quagga.start();
+            });
+
+            Quagga.onDetected(function(data) {
+               Quagga.stop();
+               assetaudit_search.find('input[name="search_criteria"]').val(data.codeResult.code);
+               assetaudit_search.find('input[type="submit"]').click();
+            });
+         });
+      }
+   }
 });
