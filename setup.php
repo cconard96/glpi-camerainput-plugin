@@ -53,28 +53,3 @@ function plugin_version_camerainput()
 	];
 }
 
-function plugin_camerainput_check_prerequisites()
-{
-	if (!method_exists('Plugin', 'checkGlpiVersion')) {
-	   $version = preg_replace('/^((\d+\.?)+).*$/', '$1', GLPI_VERSION);
-	   $matchMinGlpiReq = version_compare($version, PLUGIN_CAMERAINPUT_MIN_GLPI, '>=');
-	   $matchMaxGlpiReq = version_compare($version, PLUGIN_CAMERAINPUT_MAX_GLPI, '<');
-	   if (!$matchMinGlpiReq || !$matchMaxGlpiReq) {
-	      echo vsprintf(
-	         'This plugin requires GLPI >= %1$s and < %2$s.',
-	         [
-	            PLUGIN_CAMERAINPUT_MIN_GLPI,
-	            PLUGIN_CAMERAINPUT_MAX_GLPI,
-	         ]
-	      );
-	      return false;
-	   }
-	}
-	return true;
-}
-
-function plugin_camerainput_check_config()
-{
-	return true;
-}
-
