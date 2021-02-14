@@ -3,7 +3,7 @@
     <name>Camera Input</name>
     <key>camerainput</key>
     <state>stable</state>
-    <logo/>
+    <logo>https://raw.githubusercontent.com/cconard96/glpi-camerainput-plugin/master/Logo.png</logo>
     <description>
         <short>
             <en>Use your camera to scan QR codes or barcodes as a way to input text into some fields.</en>
