@@ -33,6 +33,11 @@ function plugin_init_camerainput()
       $PLUGIN_HOOKS['add_javascript']['camerainput'][] = 'lib/quagga/quagga2.min.js';
       $PLUGIN_HOOKS['add_javascript']['camerainput'][] = 'js/camerainput.js';
       $PLUGIN_HOOKS['add_css']['camerainput'][] = 'css/camerainput.css';
+      // Add Config Page
+      Plugin::registerClass('PluginCamerainputConfig', ['addtabon' => 'Config']);
+
+      $PLUGIN_HOOKS['pre_item_add']['camerainput']['Config'] = ['PluginCamerainputConfig', 'preAddOrUpdateConfig'];
+      $PLUGIN_HOOKS['pre_item_update']['camerainput']['Config'] = ['PluginCamerainputConfig', 'preAddOrUpdateConfig'];
    }
 }
 

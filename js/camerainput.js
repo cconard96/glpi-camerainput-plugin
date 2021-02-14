@@ -19,12 +19,24 @@
  --------------------------------------------------------------------------
 */
 
+/* global CFG_GLPI */
+/* global GLPI_PLUGINS_PATH */
 $(document).on('ready', function() {
    if (typeof navigator.mediaDevices === 'undefined' || typeof navigator.mediaDevices.getUserMedia === 'undefined' || typeof ImageCapture === 'undefined') {
       return;
    }
 
    function getQuaggaConfig() {
+      let plugin_config = {
+         barcode_formats: ["code_39_reader", "code_128_reader"]
+      };
+      $.ajax({
+         method: "GET",
+         url: (CFG_GLPI.root_doc+"/"+GLPI_PLUGINS_PATH.camerainput + "/ajax/config.php"),
+         async: false
+      }).done((config) => {
+         plugin_config = config;
+      });
       return {
          numOfWorkers: 0,
          locate: true,
@@ -34,7 +46,7 @@ $(document).on('ready', function() {
             target: '#camera-input-viewport'
          },
          decoder : {
-            readers : ["code_39_reader"]
+            readers : plugin_config['barcode_formats']
          },
          locator: {
             halfSample: false,
