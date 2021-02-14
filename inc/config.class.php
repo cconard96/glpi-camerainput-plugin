@@ -7,7 +7,7 @@ class PluginCamerainputConfig extends CommonGLPI
    public function getTabNameForItem(CommonGLPI $item, $withtemplate = 0)
    {
       if (!$withtemplate && $item->getType() === 'Config') {
-         return __('Camera input', 'camerainput');
+         return __('Camera Input', 'camerainput');
       }
       return '';
    }
@@ -25,7 +25,7 @@ class PluginCamerainputConfig extends CommonGLPI
       echo "<th colspan='4'>" . __('General', 'camerainput') . '</th></thead><td>';
       echo "<input type='hidden' name='config_class' value='".__CLASS__."'>";
       echo "<input type='hidden' name='config_context' value='plugin:camerainput'>";
-      echo __('Enabled barcode formats') . '</td>';
+      echo __('Enabled barcode formats', 'camerainput') . '</td>';
       echo '<td>';
       Dropdown::showFromArray('barcode_formats', [
          'code_128_reader'    => 'Code 128',
