@@ -5,17 +5,17 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: POEditor.com\n"
 "Project-Id-Version: Camera Input Plugin for GLPI\n"
-"Language: pt\n"
+"Language: pt-br\n"
 
 #: setup.php:47 inc/config.class.php:10
 msgid "Camera Input"
-msgstr "Camera Input"
+msgstr "Camera barcode"
 
 #: inc/config.class.php:25
 msgid "General"
-msgstr "Em geral"
+msgstr "Geral"
 
 #: inc/config.class.php:28
 msgid "Enabled barcode formats"
-msgstr "Formatos de código de barras ativados"
+msgstr "Códigos de barra ativos"
 
