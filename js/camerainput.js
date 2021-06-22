@@ -22,7 +22,7 @@
 /* global CFG_GLPI */
 /* global GLPI_PLUGINS_PATH */
 $(document).on('ready', function() {
-   if (typeof navigator.mediaDevices === 'undefined' || typeof navigator.mediaDevices.getUserMedia === 'undefined' || typeof ImageCapture === 'undefined') {
+   if (typeof navigator.mediaDevices === 'undefined' || typeof navigator.mediaDevices.getUserMedia === 'undefined') {
       return;
    }
 
