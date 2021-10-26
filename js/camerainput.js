@@ -22,11 +22,16 @@
 /* global CFG_GLPI */
 /* global GLPI_PLUGINS_PATH */
 
-window.GlpiPluginCameraInput = {
-   checkSupport: () => {
+window.GlpiPluginCameraInput = new class CameraInput {
+
+   constructor() {
+      this.possibleHooks = [this.hookGlobalSearch, this.hookPhysicalInventoryPlugin, this.hookAssetAuditPlugin];
+   }
+   checkSupport() {
       return (typeof navigator.mediaDevices !== 'undefined' && typeof navigator.mediaDevices.getUserMedia !== 'undefined');
-   },
-   getPluginConfig: () => {
+   }
+
+   getPluginConfig() {
       let plugin_config = {
          barcode_formats: ["code_39_reader", "code_128_reader"]
       };
@@ -38,8 +43,9 @@ window.GlpiPluginCameraInput = {
          plugin_config = config;
       });
       return plugin_config;
-   },
-   getQuaggaConfig: () => {
+   }
+
+   getQuaggaConfig() {
       let plugin_config = this.getPluginConfig();
       return {
          numOfWorkers: 0,
@@ -57,8 +63,9 @@ window.GlpiPluginCameraInput = {
             patchSize: "medium", // x-small, small, medium, large, x-large
          }
       };
-   },
-   initViewport: () => {
+   }
+
+   initViewport() {
       $(`<div id="camera-input-viewport"><video autoplay muted preload="auto"></video></div>`).appendTo('main');
       $('#camera-input-viewport').dialog({
          autoOpen: false,
@@ -74,8 +81,9 @@ window.GlpiPluginCameraInput = {
             Quagga.stop();
          }
       });
-   },
-   registerListeners: () => {
+   }
+
+   registerListeners() {
       $("#camera-input-viewport video").on('loadedmetadata', function() {
          const vidWidth = Math.min(window.innerWidth - 10, 640);
          const vidHeight = vidWidth * 0.5625; // 16:9
@@ -84,15 +92,16 @@ window.GlpiPluginCameraInput = {
          $('#camera-input-viewport').dialog("option", "width", vidWidth);
          $('#camera-input-viewport').dialog("option", "height", vidHeight + 60);
       });
-   },
-   hookGlobalSearch: () => {
-      const global_search = $('#champRecherche');
+   }
+
+   hookGlobalSearch() {
+      const global_search = $('input[name="globalsearch"]').closest('.input-group');
       if (global_search.length > 0) {
          global_search.append(`
          <button type="button" class="camera-input" title="Camera search">
              <i class="fas fa-camera"></i>
          </button>`);
-         global_search.find('.camera-input').on('click', function() {
+         global_search.find('.camera-input').on('click', () => {
             $('#camera-input-viewport').dialog('open');
             Quagga.init(this.getQuaggaConfig(), function(err) {
                if (err) {
@@ -109,8 +118,9 @@ window.GlpiPluginCameraInput = {
             });
          });
       }
-   },
-   hookPhysicalInventoryPlugin: () => {
+   }
+
+   hookPhysicalInventoryPlugin() {
       if (window.location.href.indexOf('/physicalinv/front') > -1) {
          const physinv_search = $('main form').first();
          if (physinv_search) {
@@ -118,7 +128,7 @@ window.GlpiPluginCameraInput = {
          <button type="button" class="camera-input pointer" style="border-radius: 3px 3px 3px 3px; padding: 3px; background: white; border: none; height: 40px" title="Camera search">
              <i class="fas fa-camera fa-lg"></i>
          </button>`);
-            physinv_search.find('.camera-input').on('click', function() {
+            physinv_search.find('.camera-input').on('click', () => {
                $('#camera-input-viewport').dialog('open');
                Quagga.init(this.getQuaggaConfig(), function(err) {
                   if (err) {
@@ -136,8 +146,9 @@ window.GlpiPluginCameraInput = {
             });
          }
       }
-   },
-   hookAssetAuditPlugin: () => {
+   }
+
+   hookAssetAuditPlugin() {
       if (window.location.href.indexOf('/assetaudit/front') > -1) {
          const assetaudit_search = $('main form').first();
          if (assetaudit_search) {
@@ -163,8 +174,9 @@ window.GlpiPluginCameraInput = {
             });
          }
       }
-   },
-   init: () => {
+   }
+
+   init() {
       if (!this.checkSupport()) {
          return;
       }
@@ -172,8 +184,7 @@ window.GlpiPluginCameraInput = {
       this.initViewport();
       this.registerListeners();
 
-      const possibleHooks = [this.hookGlobalSearch, this.hookPhysicalInventoryPlugin, this.hookAssetAuditPlugin];
-      $.each(possibleHooks, (i, func) => {
+      $.each(this.possibleHooks, (i, func) => {
          func();
       });
    }
