@@ -22,11 +22,14 @@
 /* global CFG_GLPI */
 /* global GLPI_PLUGINS_PATH */
 
-window.GlpiPluginCameraInput = new class CameraInput {
+window.GlpiPluginCameraInput = null;
+class CameraInput {
 
    constructor() {
       this.possibleHooks = [this.hookGlobalSearch, this.hookPhysicalInventoryPlugin, this.hookAssetAuditPlugin];
+      this.init();
    }
+
    checkSupport() {
       return (typeof navigator.mediaDevices !== 'undefined' && typeof navigator.mediaDevices.getUserMedia !== 'undefined');
    }
@@ -66,25 +69,32 @@ window.GlpiPluginCameraInput = new class CameraInput {
    }
 
    initViewport() {
-      $(`<div id="camera-input-viewport"><video autoplay muted preload="auto"></video></div>`).appendTo('main');
-      $('#camera-input-viewport').dialog({
-         autoOpen: false,
-         width: 640,
-         height: 400,
-         position: {
-            my: "center",
-            at: "center",
-            of: window
-         },
-         resizable: false,
-         close: function() {
-            Quagga.stop();
-         }
+      $(`<div id="camera-input-viewport" class="modal" role="dialog">
+         <div class="modal-dialog" role="dialog">
+            <div class="modal-body"><video autoplay muted preload="auto"></video></div>
+         </div>
+      </div>`).appendTo('main');
+      $('#camera-input-viewport').modal({
+         show: false
       });
+      // $('#camera-input-viewport').dialog({
+      //    autoOpen: false,
+      //    width: 640,
+      //    height: 400,
+      //    position: {
+      //       my: "center",
+      //       at: "center",
+      //       of: window
+      //    },
+      //    resizable: false,
+      //    close: function() {
+      //       Quagga.stop();
+      //    }
+      // });
    }
 
    registerListeners() {
-      $("#camera-input-viewport video").on('loadedmetadata', function() {
+      $("#camera-input-viewport video").on('loadedmetadata', () => {
          const vidWidth = Math.min(window.innerWidth - 10, 640);
          const vidHeight = vidWidth * 0.5625; // 16:9
          this.width = vidWidth;
@@ -94,16 +104,20 @@ window.GlpiPluginCameraInput = new class CameraInput {
       });
    }
 
-   hookGlobalSearch() {
+   getCameraInputButton() {
+      return `
+         <button type="button" class="camera-input btn btn-outline-secondary" title="Camera search">
+             <i class="fas fa-camera fa-lg"></i>
+         </button>`
+   }
+
+   hookGlobalSearch(class_obj) {
       const global_search = $('input[name="globalsearch"]').closest('.input-group');
       if (global_search.length > 0) {
-         global_search.append(`
-         <button type="button" class="camera-input" title="Camera search">
-             <i class="fas fa-camera"></i>
-         </button>`);
+         global_search.append(class_obj.getCameraInputButton());
          global_search.find('.camera-input').on('click', () => {
-            $('#camera-input-viewport').dialog('open');
-            Quagga.init(this.getQuaggaConfig(), function(err) {
+            $('#camera-input-viewport').modal('show');
+            Quagga.init(class_obj.getQuaggaConfig(), (err) => {
                if (err) {
                   console.log(err);
                   return
@@ -111,7 +125,7 @@ window.GlpiPluginCameraInput = new class CameraInput {
                Quagga.start();
             });
 
-            Quagga.onDetected(function(data) {
+            Quagga.onDetected((data) => {
                Quagga.stop();
                global_search.find('input[name="globalsearch"]').val(data.codeResult.code);
                global_search.find('button[type="submit"]').click();
@@ -120,17 +134,14 @@ window.GlpiPluginCameraInput = new class CameraInput {
       }
    }
 
-   hookPhysicalInventoryPlugin() {
+   hookPhysicalInventoryPlugin(class_obj) {
       if (window.location.href.indexOf('/physicalinv/front') > -1) {
          const physinv_search = $('main form').first();
          if (physinv_search) {
-            physinv_search.find('input[name="searchnumber"]').after(`
-         <button type="button" class="camera-input pointer" style="border-radius: 3px 3px 3px 3px; padding: 3px; background: white; border: none; height: 40px" title="Camera search">
-             <i class="fas fa-camera fa-lg"></i>
-         </button>`);
+            physinv_search.find('input[name="searchnumber"]').after(class_obj.getCameraInputButton());
             physinv_search.find('.camera-input').on('click', () => {
                $('#camera-input-viewport').dialog('open');
-               Quagga.init(this.getQuaggaConfig(), function(err) {
+               Quagga.init(class_obj.getQuaggaConfig(), (err) => {
                   if (err) {
                      console.log(err);
                      return
@@ -138,7 +149,7 @@ window.GlpiPluginCameraInput = new class CameraInput {
                   Quagga.start();
                });
 
-               Quagga.onDetected(function(data) {
+               Quagga.onDetected((data) => {
                   Quagga.stop();
                   physinv_search.find('input[name="searchnumber"]').val(data.codeResult.code);
                   physinv_search.find('input[type="submit"]').click();
@@ -148,17 +159,14 @@ window.GlpiPluginCameraInput = new class CameraInput {
       }
    }
 
-   hookAssetAuditPlugin() {
+   hookAssetAuditPlugin(class_obj) {
       if (window.location.href.indexOf('/assetaudit/front') > -1) {
          const assetaudit_search = $('main form').first();
          if (assetaudit_search) {
-            assetaudit_search.find('input[name="search_criteria"]').after(`
-         <button type="button" class="camera-input pointer" style="border-radius: 3px 3px 3px 3px; padding: 3px; background: white; border: none; height: 40px" title="Camera search">
-             <i class="fas fa-camera fa-lg"></i>
-         </button>`);
-            assetaudit_search.find('.camera-input').on('click', function() {
+            assetaudit_search.find('input[name="search_criteria"]').after(class_obj.getCameraInputButton());
+            assetaudit_search.find('.camera-input').on('click', () => {
                $('#camera-input-viewport').dialog('open');
-               Quagga.init(this.getQuaggaConfig(), function(err) {
+               Quagga.init(class_obj.getQuaggaConfig(), (err) => {
                   if (err) {
                      console.log(err);
                      return
@@ -166,7 +174,7 @@ window.GlpiPluginCameraInput = new class CameraInput {
                   Quagga.start();
                });
 
-               Quagga.onDetected(function(data) {
+               Quagga.onDetected((data)  => {
                   Quagga.stop();
                   assetaudit_search.find('input[name="search_criteria"]').val(data.codeResult.code);
                   assetaudit_search.find('input[type="submit"]').click();
@@ -185,11 +193,11 @@ window.GlpiPluginCameraInput = new class CameraInput {
       this.registerListeners();
 
       $.each(this.possibleHooks, (i, func) => {
-         func();
+         func(this);
       });
    }
 }
 
-$(document).on('ready', function() {
-   window.GlpiPluginCameraInput.init();
+$(document).on('ready', () => {
+   window.GlpiPluginCameraInput = new CameraInput();
 });
