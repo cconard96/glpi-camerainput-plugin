@@ -77,31 +77,6 @@ class CameraInput {
       $('#camera-input-viewport').modal({
          show: false
       });
-      // $('#camera-input-viewport').dialog({
-      //    autoOpen: false,
-      //    width: 640,
-      //    height: 400,
-      //    position: {
-      //       my: "center",
-      //       at: "center",
-      //       of: window
-      //    },
-      //    resizable: false,
-      //    close: function() {
-      //       Quagga.stop();
-      //    }
-      // });
-   }
-
-   registerListeners() {
-      $("#camera-input-viewport video").on('loadedmetadata', () => {
-         const vidWidth = Math.min(window.innerWidth - 10, 640);
-         const vidHeight = vidWidth * 0.5625; // 16:9
-         this.width = vidWidth;
-         this.height = vidHeight;
-         $('#camera-input-viewport').dialog("option", "width", vidWidth);
-         $('#camera-input-viewport').dialog("option", "height", vidHeight + 60);
-      });
    }
 
    getCameraInputButton() {
@@ -190,7 +165,6 @@ class CameraInput {
       }
 
       this.initViewport();
-      this.registerListeners();
 
       $.each(this.possibleHooks, (i, func) => {
          func(this);
