@@ -20,10 +20,12 @@ describe('Camera Input Plugin', () => {
       mockLocationURL('https://localhost/front/central.php');
       $(document.body).append(`<div id="main"><div class="input-group"><input name="globalsearch"</div></div>`)
       require('../../js/camerainput.js');
-      window.GlpiPluginCameraInput.init();
-      const container = $('input[name="globalsearch"]').closest('.input-group');
-      console.dir(container);
-      console.dir(container.children());
-      expect(container.find('button.camera-input').length).toBe(1);
+      $(document).on('ready', () => {
+         window.GlpiPluginCameraInput.init();
+         const container = $('input[name="globalsearch"]').closest('.input-group');
+         console.dir(container);
+         console.dir(container.children());
+         expect(container.find('button.camera-input').length).toBe(1);
+      })
    });
 });
