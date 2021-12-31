@@ -173,6 +173,10 @@ class CameraInput {
       $(document).ajaxComplete((event, xhr, settings) => {
          if (settings.url.indexOf('common.tabs.php') > -1) {
             const asset_form = $('form[name="asset_form"]');
+            // ignore if the form already has at least one camera button
+            if (asset_form.find('.camera-input').length > 0) {
+               return
+            }
             if (asset_form.length > 0) {
                // Check the existence of each field and then hook into it
                fields.forEach((field) => {
