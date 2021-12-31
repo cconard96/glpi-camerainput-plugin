@@ -26,7 +26,12 @@ window.GlpiPluginCameraInput = null;
 class CameraInput {
 
    constructor() {
-      this.possibleHooks = [this.hookGlobalSearch, this.hookPhysicalInventoryPlugin, this.hookAssetAuditPlugin];
+      this.possibleHooks = [
+         this.hookGlobalSearch,
+         this.hookPhysicalInventoryPlugin,
+         this.hookAssetAuditPlugin,
+         this.hookAssetForm
+      ];
       this.init();
    }
 
@@ -157,6 +162,46 @@ class CameraInput {
             });
          }
       }
+   }
+
+   hookAssetForm(class_obj, fields = ['serial', 'otherserial', 'uuid']) {
+      console.log('hookAssetForm');
+      // Can't test the URL because there isn't a single endpoint for assets
+      // We can check for a form named "asset_form" instead which should cover all use cases
+      // However, since it is loaded over AJAX we have to use an AJAX listener for all common.tabs.php URLs and then try injecting the camera button
+
+      $(document).ajaxComplete((event, xhr, settings) => {
+         if (settings.url.indexOf('common.tabs.php') > -1) {
+            const asset_form = $('form[name="asset_form"]');
+            if (asset_form.length > 0) {
+               // Check the existence of each field and then hook into it
+               fields.forEach((field) => {
+                  if (asset_form.find(`input[name="${field}"]`).length > 0) {
+                     asset_form.find(`input[name="${field}"]`).after(class_obj.getCameraInputButton());
+                     // add "d-flex" class to the parent div of the input field
+                     // This will make the button appear on the same line as the input field
+                     asset_form.find(`input[name="${field}"]`).parent().addClass('d-flex');
+                     asset_form.find('.camera-input').on('click', () => {
+                        $('#camera-input-viewport').dialog('open');
+                        Quagga.init(class_obj.getQuaggaConfig(), (err) => {
+                           if (err) {
+                              console.log(err);
+                              return
+                           }
+                           Quagga.start();
+                        });
+
+                        Quagga.onDetected((data) => {
+                           Quagga.stop();
+                           asset_form.find(`input[name="${field}"]`).val(data.codeResult.code);
+                           asset_form.find('button[type="submit"]').click();
+                        });
+                     });
+                  }
+               });
+            }
+         }
+      });
    }
 
    init() {
