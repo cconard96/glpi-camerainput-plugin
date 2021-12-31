@@ -197,7 +197,6 @@ class CameraInput {
                         Quagga.onDetected((data) => {
                            Quagga.stop();
                            asset_form.find(`input[name="${field}"]`).val(data.codeResult.code);
-                           asset_form.find('button[type="submit"]').click();
                         });
                      });
                   }
