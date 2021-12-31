@@ -165,7 +165,6 @@ class CameraInput {
    }
 
    hookAssetForm(class_obj, fields = ['serial', 'otherserial', 'uuid']) {
-      console.log('hookAssetForm');
       // Can't test the URL because there isn't a single endpoint for assets
       // We can check for a form named "asset_form" instead which should cover all use cases
       // However, since it is loaded over AJAX we have to use an AJAX listener for all common.tabs.php URLs and then try injecting the camera button
