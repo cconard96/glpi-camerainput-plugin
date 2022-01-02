@@ -82,6 +82,9 @@ class CameraInput {
       $('#camera-input-viewport').modal({
          show: false
       });
+      $('#camera-input-viewport').on('hide.bs.modal', () => {
+         Quagga.stop();
+      });
    }
 
    getCameraInputButton() {
