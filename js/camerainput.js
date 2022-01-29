@@ -94,13 +94,17 @@ class CameraInput {
          </button>`
    }
 
-   hookGlobalSearch(class_obj) {
-      const global_search = $('input[name="globalsearch"]').closest('.input-group');
-      if (global_search.length > 0) {
-         global_search.append(class_obj.getCameraInputButton());
-         global_search.find('.camera-input').on('click', () => {
+   injectCameraInputButton(input_element, container = undefined, auto_submit = false, detect_callback = undefined) {
+      if (input_element.length > 0) {
+         if (container !== undefined) {
+            container.append(this.getCameraInputButton());
+         } else {
+            input_element.after(this.getCameraInputButton());
+            container = input_element.parent();
+         }
+         container.find('.camera-input').on('click', () => {
             $('#camera-input-viewport').modal('show');
-            Quagga.init(class_obj.getQuaggaConfig(), (err) => {
+            Quagga.init(this.getQuaggaConfig(), (err) => {
                if (err) {
                   console.log(err);
                   return
@@ -110,60 +114,37 @@ class CameraInput {
 
             Quagga.onDetected((data) => {
                Quagga.stop();
-               global_search.find('input[name="globalsearch"]').val(data.codeResult.code);
-               global_search.find('button[type="submit"]').click();
+               input_element.val(data.codeResult.code);
+               $('#camera-input-viewport').modal('hide');
+
+               if (auto_submit) {
+                  container.find('button[type="submit"]').click();
+               }
+
+               if (detect_callback !== undefined) {
+                  detect_callback(data.codeResult.code);
+               }
             });
          });
       }
    }
 
+   hookGlobalSearch(class_obj) {
+      const global_search = $('input[name="globalsearch"]');
+      class_obj.injectCameraInputButton(global_search, global_search.closest('.input-group'), true);
+   }
+
    hookPhysicalInventoryPlugin(class_obj) {
       if (window.location.href.indexOf('/physicalinv/front') > -1) {
          const physinv_search = $('main form').first();
-         if (physinv_search) {
-            physinv_search.find('input[name="searchnumber"]').after(class_obj.getCameraInputButton());
-            physinv_search.find('.camera-input').on('click', () => {
-               $('#camera-input-viewport').dialog('open');
-               Quagga.init(class_obj.getQuaggaConfig(), (err) => {
-                  if (err) {
-                     console.log(err);
-                     return
-                  }
-                  Quagga.start();
-               });
-
-               Quagga.onDetected((data) => {
-                  Quagga.stop();
-                  physinv_search.find('input[name="searchnumber"]').val(data.codeResult.code);
-                  physinv_search.find('input[type="submit"]').click();
-               });
-            });
-         }
+         class_obj.injectCameraInputButton(physinv_search.find('input[name="searchnumber"]'), undefined, true);
       }
    }
 
    hookAssetAuditPlugin(class_obj) {
       if (window.location.href.indexOf('/assetaudit/front') > -1) {
          const assetaudit_search = $('main form').first();
-         if (assetaudit_search) {
-            assetaudit_search.find('input[name="search_criteria"]').after(class_obj.getCameraInputButton());
-            assetaudit_search.find('.camera-input').on('click', () => {
-               $('#camera-input-viewport').dialog('open');
-               Quagga.init(class_obj.getQuaggaConfig(), (err) => {
-                  if (err) {
-                     console.log(err);
-                     return
-                  }
-                  Quagga.start();
-               });
-
-               Quagga.onDetected((data)  => {
-                  Quagga.stop();
-                  assetaudit_search.find('input[name="search_criteria"]').val(data.codeResult.code);
-                  assetaudit_search.find('input[type="submit"]').click();
-               });
-            });
-         }
+         class_obj.injectCameraInputButton(assetaudit_search.find('input[name="search_criteria"]'), undefined, true);
       }
    }
 
@@ -182,27 +163,7 @@ class CameraInput {
             if (asset_form.length > 0) {
                // Check the existence of each field and then hook into it
                fields.forEach((field) => {
-                  if (asset_form.find(`input[name="${field}"]`).length > 0) {
-                     asset_form.find(`input[name="${field}"]`).after(class_obj.getCameraInputButton());
-                     // add "d-flex" class to the parent div of the input field
-                     // This will make the button appear on the same line as the input field
-                     asset_form.find(`input[name="${field}"]`).parent().addClass('d-flex');
-                     asset_form.find('.camera-input').on('click', () => {
-                        $('#camera-input-viewport').dialog('open');
-                        Quagga.init(class_obj.getQuaggaConfig(), (err) => {
-                           if (err) {
-                              console.log(err);
-                              return
-                           }
-                           Quagga.start();
-                        });
-
-                        Quagga.onDetected((data) => {
-                           Quagga.stop();
-                           asset_form.find(`input[name="${field}"]`).val(data.codeResult.code);
-                        });
-                     });
-                  }
+                  class_obj.injectCameraInputButton(asset_form.find(`input[name="${field}"]`), undefined, false);
                });
             }
          }
