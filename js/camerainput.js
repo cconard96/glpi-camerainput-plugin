@@ -30,7 +30,8 @@ class CameraInput {
          this.hookGlobalSearch,
          this.hookPhysicalInventoryPlugin,
          this.hookAssetAuditPlugin,
-         this.hookAssetForm
+         this.hookAssetForm,
+         this.hookSearch
       ];
       this.init();
    }
@@ -95,7 +96,7 @@ class CameraInput {
    }
 
    injectCameraInputButton(input_element, container = undefined, auto_submit = false, detect_callback = undefined) {
-      if (input_element.length > 0) {
+      if (input_element !== undefined && input_element.length > 0) {
          if (container !== undefined) {
             container.append(this.getCameraInputButton());
          } else {
@@ -165,6 +166,54 @@ class CameraInput {
                fields.forEach((field) => {
                   class_obj.injectCameraInputButton(asset_form.find(`input[name="${field}"]`), undefined, false);
                });
+            }
+         }
+      });
+   }
+
+   hookSearch(class_obj) {
+      const search_field_rows = $('.search-form > div:first-of-type > .list-group .list-group-item > .row');
+      const current_criteria = search_field_rows.find('div[data-fieldname="criteria"]');
+
+      // For each current criteria field, add a camera button on child text inputs
+      current_criteria.each((index, element) => {
+         const current_criteria_field = $(element);
+         const current_criteria_input = current_criteria_field.find('input[type="text"]');
+         current_criteria_input.parent().addClass('d-flex');
+         class_obj.injectCameraInputButton(current_criteria_input, undefined, false);
+      });
+
+      //Listen for display_criteria ajaxcomplete
+      $(document).ajaxComplete((event, xhr, settings) => {
+         const watched_actions = ['display_criteria', 'display_searchoption_value'];
+
+         // Check if the ajax request is for a display_criteria or display_searchoption_value
+         let wanted_action = false;
+         watched_actions.forEach((action) => {
+            if (settings.data !== undefined && settings.data.includes(`action=${action}`)) {
+               wanted_action = true;
+            }
+         });
+
+         if (settings.url.indexOf('search.php') > -1 && settings.data !== undefined && settings.data.includes(`action=display_criteria`)) {
+            try {
+               const new_criteria_id = $(xhr.responseText).attr('id');
+               const current_criteria_input = $(`#${new_criteria_id}`).find('div[data-fieldname="criteria"] input[type="text"]');
+               current_criteria_input.parent().addClass('d-flex');
+               class_obj.injectCameraInputButton(current_criteria_input, undefined, false);
+            } catch (e) {
+               console.log(e);
+            }
+         }
+
+         if (settings.url.indexOf('search.php') > -1 && settings.data !== undefined && settings.data.includes(`action=display_searchoption_value`)) {
+            try {
+               const new_criteria_name = $(xhr.responseText).attr('name');
+               const current_criteria_input = $(`input[name="${new_criteria_name}"][type="text"]`);
+               current_criteria_input.parent().addClass('d-flex');
+               class_obj.injectCameraInputButton(current_criteria_input, undefined, false);
+            } catch (e) {
+               console.log(e);
             }
          }
       });
