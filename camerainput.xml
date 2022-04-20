@@ -36,14 +36,9 @@
             <download_url>https://github.com/cconard96/glpi-camerainput-plugin/releases/download/v1.0.3/glpi-camerainput-v1.0.3.tar.bz2</download_url>
         </version>
         <version>
-            <num>2.0.0-alpha1</num>
+            <num>2.0.0</num>
             <compatibility>~10.0.0</compatibility>
-            <download_url>https://github.com/cconard96/glpi-camerainput-plugin/releases/download/v2.0.0-alpha1/glpi-camerainput-v2.0.0-alpha1.tar.bz2</download_url>
-        </version>
-        <version>
-            <num>2.0.0-beta1</num>
-            <compatibility>~10.0.0</compatibility>
-            <download_url>https://github.com/cconard96/glpi-camerainput-plugin/releases/download/v2.0.0-beta1/glpi-camerainput-v2.0.0-beta1.tar.bz2</download_url>
+            <download_url>https://github.com/cconard96/glpi-camerainput-plugin/releases/download/v2.0.0/glpi-camerainput-v2.0.0.tar.bz2</download_url>
         </version>
     </versions>
     <langs>
