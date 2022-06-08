@@ -1,10 +1,13 @@
 <?php
 
+/**
+ * @phpstan-type ConfigFields array{barcode_formats?: string}
+ */
 class PluginCamerainputConfig extends CommonGLPI
 {
-   static protected $notable = true;
+   static protected bool $notable = true;
 
-   public function getTabNameForItem(CommonGLPI $item, $withtemplate = 0)
+   public function getTabNameForItem(CommonGLPI $item, $withtemplate = false)
    {
       if (!$withtemplate && $item->getType() === 'Config') {
          return __('Camera Input', 'camerainput');
@@ -12,6 +15,9 @@ class PluginCamerainputConfig extends CommonGLPI
       return '';
    }
 
+   /**
+    * @return false|void
+    */
    public function showForm()
    {
       if (!Session::haveRight('config', UPDATE)) {
@@ -58,26 +64,30 @@ class PluginCamerainputConfig extends CommonGLPI
       Html::closeForm();
    }
 
-   public static function displayTabContentForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0)
+   public static function displayTabContentForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = false)
    {
       if ($item->getType() === 'Config') {
          $config = new self();
          $config->showForm();
+         return true;
       }
+      return false;
    }
 
+   /**
+    * @param ConfigFields $fields
+    * @return ConfigFields
+    */
    public static function undiscloseConfigValue($fields)
    {
-      $to_hide = [];
-      foreach ($to_hide as $f) {
-         if (in_array($f, $fields, true)) {
-            unset($fields[$f]);
-         }
-      }
       return $fields;
    }
 
-   public static function getConfig(bool $force_all = false) : array
+   /**
+    * @param bool $force_all
+    * @return ConfigFields
+    */
+   public static function getConfig(bool $force_all = false): array
    {
       static $config = null;
       if ($config === null) {
@@ -90,7 +100,7 @@ class PluginCamerainputConfig extends CommonGLPI
       return $config;
    }
 
-   public static function preAddOrUpdateConfig(CommonDBTM $item)
+   public static function preAddOrUpdateConfig(CommonDBTM $item): void
    {
       if ($item->input['config_class'] !== self::class) {
          return;

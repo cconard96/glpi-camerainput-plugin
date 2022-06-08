@@ -37,15 +37,16 @@ class PluginCamerainputMigration
 	public function __construct(string $version)
 	{
 		global $DB;
+      /** @phpstan-ignore-next-line Error exists in core, not plugin */
 		$this->glpiMigration = new Migration($version);
 		$this->db = $DB;
 	}
 
 
-	public function applyMigrations()
+	public function applyMigrations(): void
 	{
 		$rc = new ReflectionClass($this);
-		$otherMigrationFunctions = array_map(static function ($rm) use ($rc) {
+		$otherMigrationFunctions = array_map(static function ($rm) {
 		   return $rm->getShortName();
 		}, array_filter($rc->getMethods(), static function ($m) {
 		   return preg_match('/(?<=^apply_)(.*)(?=_migration$)/', $m->getShortName());
@@ -82,7 +83,7 @@ class PluginCamerainputMigration
 	}
 
 
-	private function setPluginVersionInDB($version)
+	private function setPluginVersionInDB(string $version): void
 	{
 		$this->db->updateOrInsert(Config::getTable(), [
 		   'value'     => $version,
@@ -98,7 +99,7 @@ class PluginCamerainputMigration
 	/**
 	 * Apply the migrations for the base plugin version (1.0.0).
 	 */
-	private function apply_1_0_0_migration()
+	private function apply_1_0_0_migration(): void
 	{
 	}
 }
