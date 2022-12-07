@@ -22,12 +22,6 @@
 
 function plugin_camerainput_install()
 {
-   $is_https = !empty($_SERVER['HTTPS']) || (!empty($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https');
-   $is_localhost = in_array($_SERVER['REMOTE_ADDR'], ['127.0.0.1', '::1']) || (!empty($_SERVER['HTTP_HOST']) && strpos($_SERVER['HTTP_HOST'], 'localhost') !== false);
-   if (!$is_https && !$is_localhost) {
-      echo 'This plugin requires GLPI be served over HTTPS';
-      return false;
-   }
 	$migration = new PluginCamerainputMigration(PLUGIN_CAMERAINPUT_VERSION);
 	$migration->applyMigrations();
 	return true;
