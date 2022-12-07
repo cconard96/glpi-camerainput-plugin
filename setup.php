@@ -20,7 +20,7 @@
  --------------------------------------------------------------------------
 */
 
-define('PLUGIN_CAMERAINPUT_VERSION', '1.0.3');
+define('PLUGIN_CAMERAINPUT_VERSION', '1.0.4');
 define('PLUGIN_CAMERAINPUT_MIN_GLPI', '9.5.0');
 define('PLUGIN_CAMERAINPUT_MAX_GLPI', '9.6.0');
 
