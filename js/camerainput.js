@@ -23,6 +23,7 @@
 /* global GLPI_PLUGINS_PATH */
 
 window.GlpiPluginCameraInput = null;
+
 class CameraInput {
 
    constructor() {
@@ -41,40 +42,6 @@ class CameraInput {
       return (typeof navigator.mediaDevices !== 'undefined' && typeof navigator.mediaDevices.getUserMedia !== 'undefined');
    }
 
-   getPluginConfig() {
-      let plugin_config = {
-         barcode_formats: ["code_39_reader", "code_128_reader"]
-      };
-      $.ajax({
-         method: "GET",
-         url: (CFG_GLPI.root_doc+"/"+GLPI_PLUGINS_PATH.camerainput + "/ajax/config.php"),
-         async: false
-      }).done((config) => {
-         plugin_config = config;
-      });
-      return plugin_config;
-   }
-
-   getQuaggaConfig() {
-      let plugin_config = this.getPluginConfig();
-      return {
-         numOfWorkers: 0,
-         locate: true,
-         inputStream : {
-            name : "Live",
-            type : "LiveStream",
-            target: '#camera-input-viewport'
-         },
-         decoder : {
-            readers : plugin_config['barcode_formats']
-         },
-         locator: {
-            halfSample: false,
-            patchSize: "medium", // x-small, small, medium, large, x-large
-         }
-      };
-   }
-
    initViewport() {
       $(`<div id="camera-input-viewport" class="modal" role="dialog">
          <div class="modal-dialog" role="dialog">
@@ -85,7 +52,11 @@ class CameraInput {
          show: false
       });
       $('#camera-input-viewport').on('hide.bs.modal', () => {
-         Quagga.stop();
+         // stop the video stream
+         const video = $('#camera-input-viewport video').get(0);
+         if (video.srcObject) {
+            video.srcObject.getTracks().forEach(track => track.stop());
+         }
       });
    }
 
@@ -104,28 +75,35 @@ class CameraInput {
             input_element.after(this.getCameraInputButton());
             container = input_element.parent();
          }
+
          container.find('.camera-input').on('click', () => {
             $('#camera-input-viewport').modal('show');
-            Quagga.init(this.getQuaggaConfig(), (err) => {
-               if (err) {
-                  console.log(err);
-                  return
+            navigator.mediaDevices.getUserMedia({
+               audio: false,
+               video: {
+                  facingMode: "environment",
+                  frameRate: { ideal: 10, max: 15 },
+                  focusMode: ['continuous', 'auto']
                }
-               Quagga.start();
-            });
+            }).then((stream) => {
+               const video = $('#camera-input-viewport video').get(0);
+               video.srcObject = stream;
+                // for each frame (or at least an intermittent check), try to detect a barcode with this.detector
+                video.addEventListener('timeupdate', () => {
+                    this.detector.detect(video).then((barcodes) => {
+                        if (barcodes.length > 0) {
+                           input_element.val(barcodes[0].rawValue);
+                           $('#camera-input-viewport').modal('hide');
+                           if (auto_submit) {
+                              container.find('button[type="submit"]').click();
+                           }
 
-            Quagga.onDetected((data) => {
-               Quagga.stop();
-               input_element.val(data.codeResult.code);
-               $('#camera-input-viewport').modal('hide');
-
-               if (auto_submit) {
-                  container.find('button[type="submit"]').click();
-               }
-
-               if (detect_callback !== undefined) {
-                  detect_callback(data.codeResult.code);
-               }
+                           if (detect_callback !== undefined) {
+                              detect_callback(data.codeResult.code);
+                           }
+                        }
+                    });
+                });
             });
          });
       }
@@ -232,6 +210,14 @@ class CameraInput {
       if (!this.checkSupport()) {
          return;
       }
+
+      try {
+         window['BarcodeDetector'].getSupportedFormats();
+      } catch {
+         window['BarcodeDetector'] = barcodeDetectorPolyfill.BarcodeDetectorPolyfill;
+      }
+
+      this.detector = new BarcodeDetector();
 
       this.initViewport();
 
