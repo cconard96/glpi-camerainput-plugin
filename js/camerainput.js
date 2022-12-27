@@ -29,6 +29,7 @@ class CameraInput {
       this.possibleHooks = [
          this.hookGlobalSearch,
          this.hookPhysicalInventoryPlugin,
+         this.hookManualInventoryPlugin,
          this.hookAssetAuditPlugin,
          this.hookAssetForm,
          this.hookSearch
@@ -139,6 +140,14 @@ class CameraInput {
       if (window.location.href.indexOf('/physicalinv/front') > -1) {
          const physinv_search = $('main form').first();
          class_obj.injectCameraInputButton(physinv_search.find('input[name="searchnumber"]'), undefined, true);
+      }
+   }
+
+   hookManualInventoryPlugin(class_obj) {
+      if (window.location.href.indexOf('/manualinventory/front') > -1) {
+         const maninv_search = $('.ic-table').first();
+         class_obj.injectCameraInputButton(maninv_search.find('input[name="serial_number"]'), undefined, true);
+         class_obj.injectCameraInputButton(maninv_search.find('input[name="otherserial"]'), undefined, true);
       }
    }
 
