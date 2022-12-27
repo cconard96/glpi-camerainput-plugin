@@ -1,6 +1,6 @@
 {
   "dependencies": {
-    "@ericblade/quagga2": "1.4.2"
+    "@undecaf/barcode-detector-polyfill": "^0.9.14"
   },
   "devDependencies": {
     "babel-jest": "^26.6.3",
