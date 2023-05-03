@@ -23,4 +23,5 @@ The following version table may be reduced based on the policy stated above.
 | Plugin Version | GLPI Versions | Start of Support | End of Support |
 |----------------|---------------|------------------|----------------|
 | 1.0.3          | 9.5.X         | 2021-11-15       | In Support     |
-| 2.0.0          | 10.0.X        | 2022-04-20       | In Support     |
+| 2.0.0          | 10.0.X        | 2022-04-20       | 2023-06-03     |
+| 2.1.0          | 10.0.X        | 2023-05-03       | In Support     |
