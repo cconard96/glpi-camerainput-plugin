@@ -30,8 +30,8 @@ function plugin_init_camerainput()
 	$PLUGIN_HOOKS['csrf_compliant']['camerainput'] = true;
 
 	if (Plugin::isPluginActive('camerainput')) {
-      $PLUGIN_HOOKS['add_javascript']['camerainput'][] = 'node_modules/@undecaf/zbar-wasm/dist/index.js';
-      $PLUGIN_HOOKS['add_javascript']['camerainput'][] = 'node_modules/@undecaf/barcode-detector-polyfill/dist/index.js';
+      $PLUGIN_HOOKS['add_javascript']['camerainput'][] = 'public/lib/zbar-wasm/index.js';
+      $PLUGIN_HOOKS['add_javascript']['camerainput'][] = 'public/lib/barcode-detector-polyfill/index.js';
       $PLUGIN_HOOKS['add_javascript']['camerainput'][] = 'js/camerainput.js';
       $PLUGIN_HOOKS['add_css']['camerainput'][] = 'css/camerainput.css';
    }
