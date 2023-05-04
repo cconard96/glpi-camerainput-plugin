@@ -44,8 +44,8 @@ class CameraInput {
 
    initViewport() {
       $(`<div id="camera-input-viewport" class="modal" role="dialog">
-         <div class="modal-dialog" role="dialog">
-            <div class="modal-body"><video autoplay muted preload="auto"></video></div>
+         <div class="modal-dialog d-flex justify-content-center" role="dialog">
+            <div class="modal-body"><video autoplay muted preload="auto" style="max-width: 90vw"></video></div>
          </div>
       </div>`).appendTo('main');
       $('#camera-input-viewport').modal({
