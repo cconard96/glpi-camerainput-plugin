@@ -1,4 +1,10 @@
 # Camera Input Plugin for GLPI
+
+## /!\ This plugin is approaching end of life /!\
+As I focus more on GLPI core development, I am phasing out personal plugins which no longer have a distinct purpose.
+The functionality provided by this plugin is available through the [GAPP White Label App](https://tic.gal/glpi/glpi-mobility-solutions/gapp-white-label/) which is offered by TICGAL, an official GLPI partner.
+You are of course free to fork this plugin if you want to take over maintaining it.
+
 This ties into the global search box, Physical Inventory plugin's search box, and my Asset Audit plugin's search box and allows you to use your camera as a digital barcode reader.
 Since browsers can only use webcams/cameras in a secure context, you must be connected to your GLPI instance over HTTPS or localhost.
 
